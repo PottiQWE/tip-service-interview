@@ -1,0 +1,11 @@
+{
+  "name": "tip-service",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces --if-present"
+  }
+}
