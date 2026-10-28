@@ -1,24 +1,19 @@
 import { notFound } from 'next/navigation';
+import { TipPanel } from '../../../components/TipPanel';
 
-type PublicCreator = {
-  id: string;
-  handle: string;
-  displayName: string;
-  avatarUrl?: string;
-  bio?: string;
-};
-
-async function getCreator(handle: string): Promise<PublicCreator | null> {
-  const res = await fetch(`${process.env.API_URL}/creators/${handle}`, {
-    next: { revalidate: 60 },
+async function getTipsSummary(handle: string) {
+  const res = await fetch(`${process.env.API_URL}/creators/${handle}/tips-summary`, {
+    cache: 'no-store', // totals must be live
   });
   if (!res.ok) return null;
   return res.json();
 }
 
 export default async function CreatorPage({ params }: { params: { handle: string } }) {
-  const creator = await getCreator(params.handle);
-  if (!creator) notFound();
+  const data = await getTipsSummary(params.handle);
+  if (!data) notFound();
+
+  const { creator } = data;
 
   return (
     <main>
@@ -26,6 +21,8 @@ export default async function CreatorPage({ params }: { params: { handle: string
       <h1>{creator.displayName}</h1>
       <p>@{creator.handle}</p>
       {creator.bio && <p>{creator.bio}</p>}
+
+      <TipPanel data={data} />
     </main>
   );
 }
